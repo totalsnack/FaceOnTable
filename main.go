@@ -1,4 +1,4 @@
-package main
+package doer
 
 import (
 	"errors"
@@ -33,8 +33,4 @@ func Do(s string, i int, b bool) (string, error) {
 	}
 
 	return res, nil
-}
-
-func main() {
-	fmt.Println(Do("a", 14, false))
 }
