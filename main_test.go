@@ -1,7 +1,8 @@
 package doer_test
 
 import (
-	"fmt"
+	"errors"
+	"github.com/stretchr/testify/assert"
 	"github.com/totalsnack/FaceOnTable"
 	"testing"
 )
@@ -24,14 +25,18 @@ func TestDo(t *testing.T) {
 				"testing b, 2, upper":      {args: args{"b", 2, true}, res: "[2B]", err: nil},
 				"testing d, 21, upper":     {args: args{"d", 21, true}, res: "D", err: nil},
 				"testing d, 13, lower":     {args: args{"d", 13, false}, res: "d", err: nil},
-				"testing z, 1, lower":      {args: args{"z", 1, false}, res: "1", err: fmt.Errorf("invalid s")},
-				"testing d, 100500, lower": {args: args{"d", 100500, false}, res: "", err: fmt.Errorf("invalid i")},
+				"testing z, 1, lower":      {args: args{"z", 1, false}, res: "", err: errors.New("invalid s")},
+				"testing d, 100500, lower": {args: args{"d", 100500, false}, res: "", err: errors.New("invalid i")}, // i != s
 			}
 			for testName, test := range testCases {
 				t.Run(testName, func(t *testing.T) {
-					if got, err := doer.Do(test.s, test.i, test.b); got != test.res || err != test.err {
-						t.Fail()
+					got, err := doer.Do(test.s, test.i, test.b)
+					if err != nil {
+						assert.ErrorContains(t, err, test.err.Error())
+					} else {
+						assert.NoError(t, err)
 					}
+					assert.Equal(t, test.res, got)
 				})
 			}
 		}
